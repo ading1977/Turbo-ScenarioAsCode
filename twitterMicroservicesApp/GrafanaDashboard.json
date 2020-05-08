@@ -27,13 +27,13 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
+        "h": 6,
         "w": 24,
         "x": 0,
         "y": 0
       },
       "hiddenSeries": false,
-      "id": 14,
+      "id": 28,
       "legend": {
         "avg": false,
         "current": false,
@@ -45,13 +45,12 @@
       },
       "lines": true,
       "linewidth": 1,
-      "links": [],
       "nullPointMode": "null",
       "options": {
         "dataLinks": []
       },
       "percentage": false,
-      "pointradius": 5,
+      "pointradius": 2,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
@@ -60,8 +59,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(istio_requests_total{response_code=\"200\",reporter=\"destination\"}[3m])) by (destination_app)",
-          "legendFormat": "{{destination_app}}",
+          "expr": "rate(istio_request_duration_milliseconds_sum{response_code=\"200\",grpc_response_status=\"0\",reporter=\"destination\",destination_app=\"twitter-cass-tweet\"}[3m])/rate(istio_request_duration_milliseconds_count{}[3m]) >= 0",
+          "legendFormat": "{{pod_name}}",
           "refId": "A"
         }
       ],
@@ -69,7 +68,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Twitter App Service QPS",
+      "title": "Tweet Applications",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -118,7 +117,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 6
       },
       "hiddenSeries": false,
       "id": 6,
@@ -148,12 +147,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(rate(istio_request_duration_milliseconds_sum{response_code=\"200\",reporter=\"destination\"}[3m])/rate(istio_request_duration_milliseconds_count{response_code=\"200\",reporter=\"destination\"}[3m]) >= 0) by (destination_app)",
+          "expr": "avg(rate(istio_request_duration_milliseconds_sum{request_protocol=\"http\",response_code=\"200\",reporter=\"destination\"}[3m])/rate(istio_request_duration_milliseconds_count{}[3m]) >= 0) by (destination_app)",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
           "legendFormat": "{{destination_app}}",
           "refId": "A"
+        },
+        {
+          "expr": "avg(rate(istio_request_duration_milliseconds_sum{request_protocol=\"grpc\",grpc_response_status=\"0\",response_code=\"200\",reporter=\"destination\"}[3m])/rate(istio_request_duration_milliseconds_count{}[3m]) >= 0) by (destination_app)",
+          "legendFormat": "{{destination_app}}",
+          "refId": "B"
         }
       ],
       "thresholds": [],
@@ -206,10 +210,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 5,
+        "h": 6,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 16,
@@ -291,7 +295,7 @@
           "format": "short",
           "label": "",
           "logBase": 1,
-          "max": "18",
+          "max": "10",
           "min": "0",
           "show": true
         },
@@ -322,6 +326,99 @@
         "w": 24,
         "x": 0,
         "y": 18
+      },
+      "hiddenSeries": false,
+      "id": 14,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(rate(istio_requests_total{request_protocol=\"http\",response_code=\"200\",reporter=\"destination\"}[3m])) by (destination_app)",
+          "legendFormat": "{{destination_app}}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(istio_requests_total{request_protocol=\"grpc\",grpc_response_status=\"0\",response_code=\"200\",reporter=\"destination\"}[3m])) by (destination_app)",
+          "legendFormat": "{{destination_app}}",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Twitter App Service QPS",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 22,
@@ -420,7 +517,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 32
       },
       "hiddenSeries": false,
       "id": 24,
@@ -512,7 +609,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 39
       },
       "hiddenSeries": false,
       "id": 26,
@@ -602,7 +699,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 48
       },
       "hiddenSeries": false,
       "id": 4,
@@ -693,7 +790,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 54
       },
       "hiddenSeries": false,
       "id": 2,
@@ -784,7 +881,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 63
       },
       "hiddenSeries": false,
       "id": 12,
@@ -876,7 +973,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 69
       },
       "hiddenSeries": false,
       "id": 13,
@@ -968,7 +1065,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 69
+        "y": 76
       },
       "hiddenSeries": false,
       "id": 10,
@@ -1058,7 +1155,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 76
+        "y": 83
       },
       "hiddenSeries": false,
       "id": 9,
@@ -1170,5 +1267,5 @@
   "timezone": "",
   "title": "Cassandra Testbed",
   "uid": "_UCxhN2ik",
-  "version": 1
+  "version": 3
 }
